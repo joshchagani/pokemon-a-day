@@ -1,69 +1,60 @@
-import React from 'react'
-import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { createMachine, assign } from 'xstate'
+import React, { createContext, useEffect } from 'react'
 import { useMachine } from '@xstate/react'
-import { GET_POKEMONS } from './queries/pokemonQuery'
+import { animated as a, useSpring, useTransition, config } from 'react-spring'
+import styled from 'styled-components'
+import { pokemonMachine } from './machine/uiMachine'
+import PokemonSprite from './components/PokemonSprite'
 
 interface AppProps {}
-interface PokemonContext {
-  sprite: string
-  id: number | null
-  name: string
-  data: any
-}
 
-const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
-const client = new ApolloClient({
-  uri: GRAPHQL_URL,
-  cache: new InMemoryCache(),
-})
-
-const pokemonMachine = createMachine<PokemonContext>({
-  id: 'pokemon',
-  initial: 'loading',
-  context: {
-    sprite: '',
-    id: null,
-    name: '',
-    data: {},
-  },
-  states: {
-    idle: {
-      on: {
-        FETCH: 'loading',
-      },
-    },
-    loading: {
-      invoke: {
-        src: () => client.query({ query: GET_POKEMONS }),
-        onError: 'error',
-        onDone: {
-          target: 'success',
-          actions: assign({
-            data: (_, event) => event.data.data,
-          }),
-        },
-      },
-    },
-    success: {},
-    error: {
-      on: {
-        RETRY: 'loading',
-      },
-    },
-  },
-})
+export const MachineProvider = createContext(null)
 
 function App({}: AppProps) {
-  const [current, send] = useMachine(pokemonMachine)
-  console.log('current', current)
-  return (
-    <main>
-      <h1>Main main main</h1>
-      <p>{JSON.stringify(current.value)}</p>
-      <p>{JSON.stringify(current.context)}</p>
-    </main>
-  )
+	const [current] = useMachine(pokemonMachine)
+	const ctx: any = current.context
+	const background = useSpring({
+		backgroundColor: `${current.matches('present') ? 'green' : 'black'}`,
+	})
+
+	const spriteEnter = useTransition(current.matches('present'), {
+		from: { opacity: 0 },
+		enter: { opacity: 1 },
+		leave: { opacity: 0 },
+		delay: 1000,
+		config: config.molasses,
+	})
+
+	return (
+		<MachineProvider.Provider value={ctx}>
+			<Main style={background}>
+				<h1>Main main main</h1>
+				<p>{JSON.stringify(current.value)}</p>
+				<p>{JSON.stringify(ctx)}</p>
+				{spriteEnter(
+					(styles, item) =>
+						item && (
+							<SpriteContainer style={styles}>
+								<PokemonSprite
+									id={ctx.pokemonInfo.pokemonId as number}
+									name={ctx.pokemonInfo.name as string}
+								/>
+							</SpriteContainer>
+						),
+				)}
+			</Main>
+		</MachineProvider.Provider>
+	)
 }
+
+const Main = styled(a.main)`
+	inline-size: 100vw;
+	block-size: 100vh;
+	background-color: var(--bg-loading);
+	color: white;
+`
+
+const SpriteContainer = styled(a.section)`
+	inline-size: 80%;
+`
 
 export default App

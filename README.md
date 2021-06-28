@@ -5,11 +5,8 @@ Randomly assigns a Pokémon for the day. The goal is to have the same Pokémon s
 ## 🥅 Goals
 
 - Explore state machines (xState)
-- Implement unit test
-
-## 📝 Todo
-
-- [ ] This was originally going to use GraphQL to query Pokémon data but I was having issue with the PokeAPI getting sprite info.
+- Implement unit tests
+- Client-side GraphQL
 
 ## 💾 Available Scripts
 
