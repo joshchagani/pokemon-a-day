@@ -9,6 +9,9 @@ const FALLBACK_TOTAL_POKEMON_ID = 1
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
 const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
 
+// https://img.pokemondb.net/sprites/bank/normal/chimchar.png
+// https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png
+
 const client = new ApolloClient({
 	uri: GRAPHQL_URL,
 	cache: new InMemoryCache(),
@@ -37,7 +40,7 @@ const invokeFetchPokemonCount = async (): Promise<number> => {
 const invokeFetchPokemon = async (pokemonId: number): Promise<IPokemon> => {
 	const { data } = await client.query({
 		query: GET_POKEMONS,
-		variables: { id: pokemonId },
+		variables: { id: pokemonId - 1 },
 	})
 	return data
 }
@@ -52,6 +55,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 			spriteUrl: '',
 			totalPokemon: 0,
 			pokemonId: 0,
+			progress: 0,
 		},
 		states: {
 			pokeCounter: {
@@ -62,6 +66,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 						target: 'pokePicker',
 						actions: assign({
 							totalPokemon: (_, event) => event.data,
+							progress: (_) => 0.3,
 						}),
 					},
 					onError: {
@@ -95,6 +100,9 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 										.pokemon_v2_pokemonspecy.pokemon_v2_pokemoncolor.name
 								return pokemonColor
 							},
+							spriteUrl: (context) =>
+								`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`,
+							progress: (_) => 1,
 						}),
 					},
 					onError: {

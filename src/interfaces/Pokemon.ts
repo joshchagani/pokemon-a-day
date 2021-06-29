@@ -18,6 +18,7 @@ export interface IPokemonContext {
 	color: string
 	spriteUrl: string
 	totalPokemon: number
+	progress: number
 }
 
 export interface IPokemon {
@@ -27,4 +28,5 @@ export interface IPokemon {
 export interface IPokemonSprite {
 	id: number
 	name: string
+	spriteUrl: string
 }

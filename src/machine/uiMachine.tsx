@@ -6,8 +6,13 @@ export const pokemonMachine = createMachine({
 	context: {
 		pokemonInfo: {},
 	},
-	initial: 'gather',
+	initial: 'idle',
 	states: {
+		idle: {
+			after: {
+				1000: { target: 'gather' },
+			},
+		},
 		gather: {
 			invoke: {
 				id: 'pokemon-data-machine',
