@@ -1,23 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSpring, animated as a } from 'react-spring'
 import Pikachu from '../assets/pikachu.png'
+import { MachineProvider } from '../App'
+import type { IPokemonProvider } from '../interfaces/Pokemon'
 
-interface ILoading {
-	progress: number
-}
+interface AppProps {}
 
-function Loading({ progress = 0 }: ILoading) {
+function Loading({}: AppProps) {
+	const context: IPokemonProvider = useContext(MachineProvider)
 	const saturateSpring = useSpring({
 		from: {
-			filter: `saturate(${progress})`,
+			filter: `saturate(0%)`,
 		},
-		filter: `saturate(${progress})`,
+		filter: `saturate(${context.pokemonInfo.progress}%)`,
 	})
 
 	useEffect(() => {
-		console.log('progress', progress)
-	}, [progress])
+		console.log('context', context)
+	}, [context])
 
 	return (
 		<LoadingContainer>

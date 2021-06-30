@@ -15,14 +15,21 @@ export default {
 				...(process.versions.pnp ? { tsc: 'yarn pnpify tsc' } : {}),
 			},
 		],
+		[
+			'snowpack-plugin-hash',
+			{
+				hashLength: 6,
+				sourceMaps: true,
+			},
+		],
 	],
 	routes: [
 		/* Enable an SPA Fallback in development: */
 		// {"match": "routes", "src": ".*", "dest": "/index.html"},
 	],
 	optimize: {
-		/* Example: Bundle your final build: */
-		// "bundle": true,
+		minify: true,
+		target: 'es2020',
 	},
 	packageOptions: {
 		/* ... */

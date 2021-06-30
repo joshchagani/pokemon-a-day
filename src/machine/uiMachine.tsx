@@ -1,12 +1,14 @@
 import { assign, createMachine } from 'xstate'
 import { createPokemonDataMachine } from './dataMachine'
 
-export const pokemonMachine = createMachine({
+import initialContext from './initialContext'
+
+export const pokemonMachine = createMachine<any>({
 	id: 'pokemon-machine',
+	initial: 'gather',
 	context: {
 		pokemonInfo: {},
 	},
-	initial: 'idle',
 	states: {
 		idle: {
 			after: {

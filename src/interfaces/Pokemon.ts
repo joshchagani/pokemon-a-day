@@ -21,6 +21,10 @@ export interface IPokemonContext {
 	progress: number
 }
 
+export interface IPokemonProvider {
+	pokemonInfo: IPokemonContext
+}
+
 export interface IPokemon {
 	pokemon_v2_pokemonspeciesname: ApolloQueryResult<any>
 }

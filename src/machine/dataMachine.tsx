@@ -2,6 +2,7 @@ import { assign, createMachine } from 'xstate'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { dateSubstringer } from '../utils'
 import { GET_POKEMONS } from '../queries/pokemonQuery'
+import initialContext from './initialContext'
 import type { IPokemon, IPokemonContext } from '../interfaces/Pokemon'
 
 const FALLBACK_TOTAL_POKEMON_COUNT = 898
@@ -40,7 +41,7 @@ const invokeFetchPokemonCount = async (): Promise<number> => {
 const invokeFetchPokemon = async (pokemonId: number): Promise<IPokemon> => {
 	const { data } = await client.query({
 		query: GET_POKEMONS,
-		variables: { id: pokemonId - 1 },
+		variables: { id: pokemonId },
 	})
 	return data
 }
@@ -50,12 +51,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 		id: 'pokemon-data',
 		initial: 'pokeCounter',
 		context: {
-			name: '',
-			color: '',
-			spriteUrl: '',
-			totalPokemon: 0,
-			pokemonId: 0,
-			progress: 0,
+			...initialContext,
 		},
 		states: {
 			pokeCounter: {
@@ -66,7 +62,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 						target: 'pokePicker',
 						actions: assign({
 							totalPokemon: (_, event) => event.data,
-							progress: (_) => 0.3,
+							progress: (_) => 30,
 						}),
 					},
 					onError: {
@@ -80,8 +76,13 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 			pokePicker: {
 				id: 'random-pokemon-id',
 				entry: 'getRandomId',
-				always: { target: 'query', cond: 'isIdDetermined' },
+				always: {
+					target: 'query',
+					cond: 'isIdDetermined',
+					actions: assign({ progress: (_) => 80 }),
+				},
 			},
+			pause: {},
 			query: {
 				invoke: {
 					id: 'fetch-pokemon-data',
@@ -102,7 +103,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 							},
 							spriteUrl: (context) =>
 								`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`,
-							progress: (_) => 1,
+							progress: (_) => 100,
 						}),
 					},
 					onError: {

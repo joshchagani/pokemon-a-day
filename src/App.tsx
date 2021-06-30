@@ -1,19 +1,28 @@
-import React from 'react'
-import { useMachine } from '@xstate/react'
+import React, { createContext } from 'react'
+import { useMachine, useActor } from '@xstate/react'
 import { animated as a, useSpring, useTransition, config } from 'react-spring'
 import styled from 'styled-components'
 import { pokemonMachine } from './machine/uiMachine'
 import PokemonSprite from './components/PokemonSprite'
 import Loading from './components/Loading'
-import type { IPokemonContext } from './interfaces/Pokemon'
+import initialContext from './machine/initialContext'
+import type { IPokemonProvider, IPokemonContext } from './interfaces/Pokemon'
+
+import { mockMachine } from './machine/mockMachine'
 
 interface AppProps {}
 
+export const MachineProvider = createContext<IPokemonProvider>({
+	pokemonInfo: {
+		...initialContext,
+	},
+})
+
 function App({}: AppProps) {
 	const [current] = useMachine(pokemonMachine)
-	const ctx: IPokemonContext = (current.context as any).pokemonInfo
+	const ctx: IPokemonContext = (current.context as IPokemonProvider).pokemonInfo
 	const backgroundSpring = useSpring({
-		backgroundColor: `${current.matches('present') ? ctx.color : 'black'}`,
+		backgroundColor: `${current.matches('present') ? ctx.color : 'white'}`,
 	})
 
 	const spriteEnter = useTransition(current.matches('present'), {
@@ -25,22 +34,23 @@ function App({}: AppProps) {
 	})
 
 	return (
-		<Main style={backgroundSpring}>
-			{!current.matches('present') && <Loading progress={ctx.progress} />}
-			{spriteEnter(
-				(styles, item) =>
-					item && (
-						<SpriteContainer style={styles}>
-							<PokemonName>{ctx.name}</PokemonName>
-							<PokemonSprite
-								id={ctx.pokemonId as number}
-								name={ctx.name as string}
-								spriteUrl={ctx.spriteUrl as string}
-							/>
-						</SpriteContainer>
-					),
-			)}
-		</Main>
+		<MachineProvider.Provider value={current.context as IPokemonProvider}>
+			<Main style={backgroundSpring}>
+				{spriteEnter(
+					(styles, item) =>
+						item && (
+							<SpriteContainer style={styles}>
+								<PokemonName>{ctx.name}</PokemonName>
+								<PokemonSprite
+									id={ctx.pokemonId as number}
+									name={ctx.name as string}
+									spriteUrl={ctx.spriteUrl as string}
+								/>
+							</SpriteContainer>
+						),
+				)}
+			</Main>
+		</MachineProvider.Provider>
 	)
 }
 
