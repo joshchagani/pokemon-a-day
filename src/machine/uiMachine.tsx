@@ -3,11 +3,20 @@ import { createPokemonDataMachine } from './dataMachine'
 
 import initialContext from './initialContext'
 
+interface IPokemonMachineScheme {
+	states: {
+		idle: {}
+		gather: {}
+		present: {}
+	}
+}
+
 export const pokemonMachine = createMachine<any>({
 	id: 'pokemon-machine',
 	initial: 'gather',
 	context: {
 		pokemonInfo: {},
+		dataRef: null,
 	},
 	states: {
 		idle: {

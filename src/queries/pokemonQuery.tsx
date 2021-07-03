@@ -14,6 +14,16 @@ export const GET_POKEMONS = gql`
 				pokemon_v2_pokemoncolor {
 					name
 				}
+				pokemon_v2_pokemons {
+					base_experience
+					height
+					weight
+					pokemon_v2_pokemonabilities {
+						pokemon_v2_ability {
+							name
+						}
+					}
+				}
 			}
 		}
 	}

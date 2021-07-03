@@ -10,6 +10,20 @@ interface IPokemonName {
 	name: string
 	pokemon_species_id: number
 	pokemon_v2_pokemonspecy: IPokemonColor
+	pokemon_v2_pokemons: IPokemonStats[]
+}
+
+interface IPokemonAbilities {
+	pokemon_v2_ability: {
+		name: string
+	}
+}
+
+interface IPokemonStats {
+	base_experience: string
+	height: string
+	weight: string
+	pokemon_v2_pokemonabilities: IPokemonAbilities[]
 }
 
 export interface IPokemonContext {
@@ -19,6 +33,10 @@ export interface IPokemonContext {
 	spriteUrl: string
 	totalPokemon: number
 	progress: number
+	baseExperience: number
+	height: number
+	weight: number
+	abilities: string[]
 }
 
 export interface IPokemonProvider {
@@ -26,11 +44,5 @@ export interface IPokemonProvider {
 }
 
 export interface IPokemon {
-	pokemon_v2_pokemonspeciesname: ApolloQueryResult<any>
-}
-
-export interface IPokemonSprite {
-	id: number
-	name: string
-	spriteUrl: string
+	pokemon_v2_pokemonspeciesname: ApolloQueryResult<IPokemonName>
 }

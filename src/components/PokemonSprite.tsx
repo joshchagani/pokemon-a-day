@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
-import type { IPokemonSprite } from '../interfaces/Pokemon'
+interface IPokemonSprite {
+	id: number
+	name: string
+	spriteUrl: string
+}
 
 function PokemonSprite({ id, name, spriteUrl }: IPokemonSprite) {
 	return <Sprite src={spriteUrl} alt={name} title={name} data-pokemon-id={id} />
@@ -8,7 +12,9 @@ function PokemonSprite({ id, name, spriteUrl }: IPokemonSprite) {
 
 const Sprite = styled.img`
 	display: block;
-	inline-size: 100%;
+	inline-size: min(100%, 50vh);
+	margin-inline-start: auto;
+	margin-inline-end: auto;
 `
 
 export default PokemonSprite

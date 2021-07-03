@@ -5,9 +5,9 @@ import Pikachu from '../assets/pikachu.png'
 import { MachineProvider } from '../App'
 import type { IPokemonProvider } from '../interfaces/Pokemon'
 
-interface AppProps {}
+interface ILoading {}
 
-function Loading({}: AppProps) {
+function Loading({}: ILoading) {
 	const context: IPokemonProvider = useContext(MachineProvider)
 	const saturateSpring = useSpring({
 		from: {
@@ -15,10 +15,6 @@ function Loading({}: AppProps) {
 		},
 		filter: `saturate(${context.pokemonInfo.progress}%)`,
 	})
-
-	useEffect(() => {
-		console.log('context', context)
-	}, [context])
 
 	return (
 		<LoadingContainer>

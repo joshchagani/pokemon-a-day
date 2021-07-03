@@ -10,50 +10,48 @@ const FALLBACK_TOTAL_POKEMON_ID = 1
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
 const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
 
-// https://img.pokemondb.net/sprites/bank/normal/chimchar.png
-// https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png
-
 const client = new ApolloClient({
 	uri: GRAPHQL_URL,
 	cache: new InMemoryCache(),
 })
 
-const invokePokePicker = (maxNumber: number): number => {
-	const date = new Date()
-	date.setHours(0)
-	date.setMinutes(0)
-	date.setSeconds(0)
-	date.setMilliseconds(0)
-	let indexer = 5
-	let newNum = dateSubstringer(date)
-	while (newNum > maxNumber) {
-		newNum = dateSubstringer(date, indexer--)
+interface IPokemonStateSchema {
+	states: {
+		pokeCounter: {}
+		pokePicker: {}
+		pause: {}
+		query: {}
+		success: {}
+		failure: {}
 	}
-	return newNum
-}
-
-const invokeFetchPokemonCount = async (): Promise<number> => {
-	const response = await fetch(POKEMON_COUNT_URL)
-	const { count } = await response.json()
-	return count
-}
-
-const invokeFetchPokemon = async (pokemonId: number): Promise<IPokemon> => {
-	const { data } = await client.query({
-		query: GET_POKEMONS,
-		variables: { id: pokemonId },
-	})
-	return data
 }
 
 export const createPokemonDataMachine = createMachine<IPokemonContext>(
 	{
 		id: 'pokemon-data',
 		initial: 'pokeCounter',
+		// initial: 'mockCounter',
 		context: {
 			...initialContext,
 		},
 		states: {
+			mockCounter: {
+				invoke: {
+					src: 'getMockPokemon',
+					onDone: {
+						actions: [
+							'getAbilities',
+							'getBaseExperience',
+							'getColor',
+							'getHeight',
+							'getName',
+							'getSpriteUrl',
+							'getWeight',
+						],
+						target: 'success',
+					},
+				},
+			},
 			pokeCounter: {
 				invoke: {
 					id: 'fetch-pokemon-count',
@@ -82,29 +80,24 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					actions: assign({ progress: (_) => 80 }),
 				},
 			},
-			pause: {},
 			query: {
 				invoke: {
 					id: 'fetch-pokemon-data',
 					src: 'getPokemon',
 					onDone: {
 						target: 'success',
-						actions: assign({
-							name: (_, event) => {
-								const pokemonName =
-									event.data.pokemon_v2_pokemonspeciesname[0].name
-								return pokemonName
-							},
-							color: (_, event) => {
-								const pokemonColor =
-									event.data.pokemon_v2_pokemonspeciesname[0]
-										.pokemon_v2_pokemonspecy.pokemon_v2_pokemoncolor.name
-								return pokemonColor
-							},
-							spriteUrl: (context) =>
-								`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`,
-							progress: (_) => 100,
-						}),
+						actions: [
+							'getAbilities',
+							'getBaseExperience',
+							'getColor',
+							'getHeight',
+							'getName',
+							'getSpriteUrl',
+							'getWeight',
+							assign({
+								progress: (_) => 100,
+							}),
+						],
 					},
 					onError: {
 						target: 'failure',
@@ -127,10 +120,58 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 		services: {
 			getTotalPokemonCount: (_) => invokeFetchPokemonCount,
 			getPokemon: (context) => invokeFetchPokemon(context.pokemonId),
+			getMockPokemon: () => invokeMockFetch,
 		},
 		actions: {
+			getAbilities: assign({
+				abilities: (_, event) => {
+					const abilities =
+						event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy.pokemon_v2_pokemons[0].pokemon_v2_pokemonabilities.map(
+							(ability: any) => {
+								const splitWords = ability.pokemon_v2_ability.name
+									.split('-')
+									.map(
+										(s: string) => s.charAt(0).toUpperCase() + s.substring(1),
+									)
+								return splitWords.join(' ')
+							},
+						)
+					return abilities
+				},
+			}),
+			getBaseExperience: assign({
+				baseExperience: (_, event) =>
+					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
+						.pokemon_v2_pokemons[0].base_experience,
+			}),
+			getColor: assign({
+				color: (_, event) =>
+					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
+						.pokemon_v2_pokemoncolor.name,
+			}),
+			getHeight: assign({
+				height: (_, event) =>
+					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
+						.pokemon_v2_pokemons[0].height,
+			}),
+			getName: assign({
+				name: (_, event) => event.data.pokemon_v2_pokemonspeciesname[0].name,
+			}),
 			getRandomId: assign({
 				pokemonId: (context) => invokePokePicker(context.totalPokemon),
+			}),
+			getSpriteUrl: assign({
+				spriteUrl: (context) => {
+					// Other possible sprite options
+					// https://img.pokemondb.net/sprites/bank/normal/chimchar.png
+					// https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png
+					return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`
+				},
+			}),
+			getWeight: assign({
+				weight: (_, event) =>
+					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
+						.pokemon_v2_pokemons[0].weight,
 			}),
 		},
 		guards: {
@@ -138,3 +179,74 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 		},
 	},
 )
+
+async function invokeFetchPokemonCount(): Promise<number> {
+	const response = await fetch(POKEMON_COUNT_URL)
+	const { count } = await response.json()
+	return count
+}
+
+async function invokeFetchPokemon(pokemonId: number): Promise<IPokemon> {
+	const { data } = await client.query({
+		query: GET_POKEMONS,
+		variables: { id: pokemonId },
+	})
+	return data
+}
+
+function invokeMockFetch(): Promise<any> {
+	return new Promise((resolve, reject) =>
+		resolve({
+			pokemon_v2_pokemonspeciesname: [
+				{
+					name: 'Murkrow',
+					pokemon_species_id: 198,
+					pokemon_v2_pokemonspecy: {
+						pokemon_v2_pokemoncolor: {
+							name: 'black',
+						},
+						pokemon_v2_pokemons: [
+							{
+								base_experience: 81,
+								height: 5,
+								weight: 21,
+								pokemon_v2_pokemonabilities: [
+									{
+										pokemon_v2_ability: {
+											name: 'insomnia',
+										},
+									},
+									{
+										pokemon_v2_ability: {
+											name: 'super-luck',
+										},
+									},
+									{
+										pokemon_v2_ability: {
+											name: 'prankster',
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			],
+		}),
+	)
+}
+
+function invokePokePicker(maxNumber: number): number {
+	const date = new Date()
+	date.setHours(0)
+	date.setMinutes(0)
+	date.setSeconds(0)
+	date.setMilliseconds(0)
+	let indexer = 5
+	let newNum = dateSubstringer(date)
+	while (newNum > maxNumber) {
+		newNum = dateSubstringer(date, indexer--)
+	}
+	console.log('pokemon number', newNum)
+	return newNum
+}

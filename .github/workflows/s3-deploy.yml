@@ -25,7 +25,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Test App
         run: npm run test

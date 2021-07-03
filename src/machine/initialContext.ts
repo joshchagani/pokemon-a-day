@@ -7,6 +7,10 @@ const initialContext: IPokemonContext = {
 	totalPokemon: 0,
 	pokemonId: 0,
 	progress: 0,
+	baseExperience: 0,
+	height: 0,
+	weight: 0,
+	abilities: ['', ''],
 }
 
 export default initialContext
