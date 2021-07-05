@@ -1,5 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { DateTime } from 'luxon'
 import { dateSubstringer, upperCaser } from '../utils'
 import { GET_POKEMONS } from '../queries/pokemonQuery'
 import initialContext from './initialContext'
@@ -249,16 +250,18 @@ function invokeMockFetch(): Promise<any> {
 }
 
 function invokePokePicker(maxNumber: number): number {
-	const date = new Date()
-	date.setHours(0)
-	date.setMinutes(0)
-	date.setSeconds(0)
-	date.setMilliseconds(0)
+	const dateTimeLocal = DateTime.now()
+	const year = dateTimeLocal.year
+	const month = dateTimeLocal.month
+	const day = dateTimeLocal.day
+	const ts = DateTime.utc(year, month, day).toMillis()
 	let indexer = 5
-	let newNum = dateSubstringer(date)
+	let newNum = ts
 	while (newNum > maxNumber) {
-		newNum = dateSubstringer(date, indexer--)
+		newNum = parseInt(ts.toString().substring(indexer, indexer + 3))
 	}
+	console.log('local', dateTimeLocal)
+	console.log('UTC', ts)
 	console.log('pokemon number', newNum)
 	return newNum
 }
