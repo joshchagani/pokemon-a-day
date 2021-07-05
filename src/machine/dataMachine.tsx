@@ -1,6 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { dateSubstringer } from '../utils'
+import { dateSubstringer, upperCaser } from '../utils'
 import { GET_POKEMONS } from '../queries/pokemonQuery'
 import initialContext from './initialContext'
 import type { IPokemon, IPokemonContext } from '../interfaces/Pokemon'
@@ -40,12 +40,16 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					src: 'getMockPokemon',
 					onDone: {
 						actions: [
+							assign({
+								pokemonId: (_) => 25,
+							}),
 							'getAbilities',
 							'getBaseExperience',
 							'getColor',
 							'getHeight',
 							'getName',
 							'getSpriteUrl',
+							'getTypes',
 							'getWeight',
 						],
 						target: 'success',
@@ -93,6 +97,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 							'getHeight',
 							'getName',
 							'getSpriteUrl',
+							'getTypes',
 							'getWeight',
 							assign({
 								progress: (_) => 100,
@@ -125,37 +130,33 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 		actions: {
 			getAbilities: assign({
 				abilities: (_, event) => {
+					interface IAbility {
+						pokemon_v2_ability: {
+							name: string
+						}
+					}
 					const abilities =
-						event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy.pokemon_v2_pokemons[0].pokemon_v2_pokemonabilities.map(
-							(ability: any) => {
-								const splitWords = ability.pokemon_v2_ability.name
-									.split('-')
-									.map(
-										(s: string) => s.charAt(0).toUpperCase() + s.substring(1),
-									)
-								return splitWords.join(' ')
-							},
+						event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemonabilities.map(
+							(ability: IAbility) =>
+								upperCaser(ability.pokemon_v2_ability.name),
 						)
 					return abilities
 				},
 			}),
 			getBaseExperience: assign({
 				baseExperience: (_, event) =>
-					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
-						.pokemon_v2_pokemons[0].base_experience,
+					event.data.pokemon_v2_pokemon[0].base_experience,
 			}),
 			getColor: assign({
 				color: (_, event) =>
-					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
+					event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemonspecy
 						.pokemon_v2_pokemoncolor.name,
 			}),
 			getHeight: assign({
-				height: (_, event) =>
-					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
-						.pokemon_v2_pokemons[0].height,
+				height: (_, event) => event.data.pokemon_v2_pokemon[0].height,
 			}),
 			getName: assign({
-				name: (_, event) => event.data.pokemon_v2_pokemonspeciesname[0].name,
+				name: (_, event) => event.data.pokemon_v2_pokemon[0].name,
 			}),
 			getRandomId: assign({
 				pokemonId: (context) => invokePokePicker(context.totalPokemon),
@@ -168,10 +169,23 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`
 				},
 			}),
+			getTypes: assign({
+				types: (_, event) => {
+					interface IType {
+						pokemon_v2_type: {
+							name: string
+						}
+					}
+					const types =
+						event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemontypes.map(
+							(type: IType) => upperCaser(type.pokemon_v2_type.name),
+						)
+					event.data.pokemon_v2_pokemon[0].weight
+					return types
+				},
+			}),
 			getWeight: assign({
-				weight: (_, event) =>
-					event.data.pokemon_v2_pokemonspeciesname[0].pokemon_v2_pokemonspecy
-						.pokemon_v2_pokemons[0].weight,
+				weight: (_, event) => event.data.pokemon_v2_pokemon[0].weight,
 			}),
 		},
 		guards: {
@@ -197,39 +211,37 @@ async function invokeFetchPokemon(pokemonId: number): Promise<IPokemon> {
 function invokeMockFetch(): Promise<any> {
 	return new Promise((resolve, reject) =>
 		resolve({
-			pokemon_v2_pokemonspeciesname: [
+			pokemon_v2_pokemon: [
 				{
-					name: 'Murkrow',
-					pokemon_species_id: 198,
+					name: 'pikachu',
+					base_experience: 112,
+					height: 4,
+					weight: 60,
+					pokemon_species_id: 25,
 					pokemon_v2_pokemonspecy: {
 						pokemon_v2_pokemoncolor: {
-							name: 'black',
+							name: 'red',
 						},
-						pokemon_v2_pokemons: [
-							{
-								base_experience: 81,
-								height: 5,
-								weight: 21,
-								pokemon_v2_pokemonabilities: [
-									{
-										pokemon_v2_ability: {
-											name: 'insomnia',
-										},
-									},
-									{
-										pokemon_v2_ability: {
-											name: 'super-luck',
-										},
-									},
-									{
-										pokemon_v2_ability: {
-											name: 'prankster',
-										},
-									},
-								],
-							},
-						],
 					},
+					pokemon_v2_pokemonabilities: [
+						{
+							pokemon_v2_ability: {
+								name: 'static',
+							},
+						},
+						{
+							pokemon_v2_ability: {
+								name: 'lightning-rod',
+							},
+						},
+					],
+					pokemon_v2_pokemontypes: [
+						{
+							pokemon_v2_type: {
+								name: 'electric',
+							},
+						},
+					],
 				},
 			],
 		}),

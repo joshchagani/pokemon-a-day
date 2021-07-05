@@ -19,12 +19,16 @@ export const MachineProvider = createContext<IPokemonProvider>({
 
 function App({}: AppProps) {
 	const [current] = useMachine(pokemonMachine)
-	const [imageState, setImageState] = useState<string>('not-loaded')
 	const ctx: IPokemonContext = (current.context as IPokemonProvider).pokemonInfo
-	const backgroundSpring = useSpring({
+	const styleSpring = useSpring({
 		backgroundColor: `${
 			current.matches('present')
-				? POKEMON_COLORS.get(ctx.color.toLowerCase())
+				? (POKEMON_COLORS.get(ctx.color.toLowerCase()) as any).hsl
+				: 'white'
+		}`,
+		color: `${
+			current.matches('present')
+				? (POKEMON_COLORS.get(ctx.color.toLowerCase()) as any).fontColor
 				: 'white'
 		}`,
 	})
@@ -37,17 +41,25 @@ function App({}: AppProps) {
 		config: config.molasses,
 	})
 
+	if (!current.matches('present')) return <Main>Loading...</Main>
 	return (
 		<MachineProvider.Provider value={current.context as IPokemonProvider}>
-			<Main style={backgroundSpring}>
+			<Main style={styleSpring}>
 				{spriteEnter(
 					(styles, item) =>
 						item && (
 							<SpriteContainer style={styles}>
 								<div>
 									<PokemonName>
-										#{ctx.pokemonId} - {ctx.name}
+										#{ctx.pokemonId} {ctx.name}
 									</PokemonName>
+									<PokemonType>
+										{ctx.types.map((type: string, idx: number) => (
+											<span key={`pokemon-ability-key-${idx}`}>
+												{ctx.types.length - 1 === idx ? type : `${type}, `}
+											</span>
+										))}
+									</PokemonType>
 									<PokemonSprite
 										id={ctx.pokemonId as number}
 										name={ctx.name as string}
@@ -73,7 +85,6 @@ const Main = styled(a.main)`
 	min-block-size: 100vh;
 	min-inline-size: 100vw;
 	background-color: var(--bg-loading);
-	color: white;
 	align-items: center;
 	justify-content: center;
 `
@@ -99,6 +110,12 @@ const SpriteContainer = styled(a.section)`
 
 const PokemonName = styled.h1`
 	font-size: min(2em, 7vw);
+	text-align: center;
+	text-transform: capitalize;
+`
+
+const PokemonType = styled.h2`
+	font-size: min(1em, 4vw);
 	text-align: center;
 `
 

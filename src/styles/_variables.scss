@@ -1,17 +1,111 @@
 :root {
 	--bg-loading: hsl(0, 0%, 100%);
 	--main-font: 'Press Start 2P', monospace;
-	--pokemon-black: hsl(0, 0%, 0%);
-	--pokemon-blue: hsl(210, 100%, 56%);
-	--pokemon-brown: hsl(25, 76%, 31%);
-	--pokemon-gold: hsl(43, 74%, 49%);
-	--pokemon-gray: hsl(210, 13%, 50%);
-	--pokemon-green: hsl(146, 50%, 36%);
-	--pokemon-light-blue: hsl(195, 100%, 65%);
-	--pokemon-orange: hsl(33, 100%, 50%);
-	--pokemon-pink: hsl(351, 100%, 86%);
-	--pokemon-purple: hsl(260, 60%, 65%);
-	--pokemon-red: hsl(348, 83%, 47%);
-	--pokemon-white: hsl(0, 0%, 96%);
-	--pokemon-yellow: hsl(51, 100%, 50%);
+	--invert-hue: 180;
+	--white: hsl(0, 0%, 100%);
+	--black: hsl(0, 0%, 0%);
+	--pokemon-black-h: 0;
+	--pokemon-black-s: 0%;
+	--pokemon-black-l: 0%;
+	--pokemon-black: hsl(
+		var(--pokemon-black-h),
+		var(--pokemon-black-s),
+		var(--pokemon-black-l)
+	);
+	--pokemon-blue-h: 210;
+	--pokemon-blue-s: 100%;
+	--pokemon-blue-l: 56%;
+	--pokemon-blue: hsl(
+		var(--pokemon-blue-h),
+		var(--pokemon-blue-s),
+		var(--pokemon-blue-l)
+	);
+	--pokemon-brown-h: 25;
+	--pokemon-brown-s: 76%;
+	--pokemon-brown-l: 31%;
+	--pokemon-brown: hsl(
+		var(--pokemon-brown-h),
+		var(--pokemon-brown-s),
+		var(--pokemon-brown-l)
+	);
+	--pokemon-gold-h: 43;
+	--pokemon-gold-s: 74%;
+	--pokemon-gold-l: 49%;
+	--pokemon-gold: hsl(
+		var(--pokemon-gold-h),
+		var(--pokemon-gold-s),
+		var(--pokemon-gold-l)
+	);
+	--pokemon-gray-h: 210;
+	--pokemon-gray-s: 13%;
+	--pokemon-gray-l: 50%;
+	--pokemon-gray: hsl(
+		var(--pokemon-gray-h),
+		var(--pokemon-gray-s),
+		var(--pokemon-gray-l)
+	);
+	--pokemon-green-h: 146;
+	--pokemon-green-s: 50%;
+	--pokemon-green-l: 36%;
+	--pokemon-green: hsl(
+		var(--pokemon-green-h),
+		var(--pokemon-green-s),
+		var(--pokemon-green-l)
+	);
+	--pokemon-light-blue-h: 195;
+	--pokemon-light-blue-s: 100%;
+	--pokemon-light-blue-l: 65%;
+	--pokemon-light-blue: hsl(
+		var(--pokemon-light-blue-h),
+		var(--pokemon-light-blue-s),
+		var(--pokemon-light-blue-l)
+	);
+	--pokemon-orange-h: 33;
+	--pokemon-orange-s: 100%;
+	--pokemon-orange-l: 50%;
+	--pokemon-orange: hsl(
+		var(--pokemon-orange-h),
+		var(--pokemon-orange-s),
+		var(--pokemon-orange-l)
+	);
+	--pokemon-pink-h: 351;
+	--pokemon-pink-s: 100%;
+	--pokemon-pink-l: 86%;
+	--pokemon-pink: hsl(
+		var(--pokemon-pink-h),
+		var(--pokemon-pink-s),
+		var(--pokemon-pink-l)
+	);
+	--pokemon-purple-h: 260;
+	--pokemon-purple-s: 60%;
+	--pokemon-purple-l: 65%;
+	--pokemon-purple: hsl(
+		var(--pokemon-purple-h),
+		var(--pokemon-purple-s),
+		var(--pokemon-purple-l)
+	);
+	--pokemon-red-h: 348;
+	--pokemon-red-s: 83%;
+	--pokemon-red-l: 47%;
+	--pokemon-red: hsl(
+		var(--pokemon-red-h),
+		var(--pokemon-red-s),
+		var(--pokemon-red-l)
+	);
+	--pokemon-white-h: 0;
+	--pokemon-white-s: 0%;
+	--pokemon-white-l: 96%;
+	--pokemon-white: hsl(
+		var(--pokemon-white-h),
+		var(--pokemon-white-s),
+		var(--pokemon-white-l)
+	);
+	--pokemon-yellow-h: 51;
+	--pokemon-yellow-s: 100%;
+	--pokemon-yellow-l: 50%;
+	--pokemon-yellow: hsl(
+		var(--pokemon-yellow-h),
+		var(--pokemon-yellow-s),
+		var(--pokemon-yellow-l)
+	);
 }

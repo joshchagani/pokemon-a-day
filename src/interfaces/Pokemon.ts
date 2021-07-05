@@ -37,6 +37,7 @@ export interface IPokemonContext {
 	height: number
 	weight: number
 	abilities: string[]
+	types: string[]
 }
 
 export interface IPokemonProvider {
