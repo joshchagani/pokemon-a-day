@@ -89,12 +89,17 @@ function App({}: AppProps) {
 
 const Main = styled(a.main)`
 	display: flex;
+	align-items: center;
+	justify-content: center;
 	min-block-size: 100vh;
 	min-inline-size: 100%;
 	background-color: var(--bg-loading);
-	align-items: center;
-	justify-content: center;
 	font-size: min(var(--main-font-size), 4vw);
+	padding-block-end: 1.5rem;
+
+	@media screen and (min-width: 400px) {
+		padding-block-start: 1rem;
+	}
 `
 
 const SpriteContainer = styled(a.section)`

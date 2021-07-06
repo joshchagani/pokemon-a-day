@@ -29,7 +29,11 @@ export default {
 	],
 	optimize: {
 		minify: true,
+		preload: true,
+		sourcemap: 'external',
+		splitting: true,
 		target: 'es2020',
+		treeshake: true,
 	},
 	packageOptions: {
 		/* ... */
