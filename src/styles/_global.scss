@@ -1,3 +1,9 @@
 * {
-	font-family: var(--main-font);
+	font-family: var(--main-font-family);
+	font-weight: var(--main-font-weight);
+	font-style: var(--main-font-style);
+}
+
+html {
+	font-size: 16px;
 }

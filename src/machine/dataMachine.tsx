@@ -138,8 +138,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					}
 					const abilities =
 						event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemonabilities.map(
-							(ability: IAbility) =>
-								upperCaser(ability.pokemon_v2_ability.name),
+							(ability: IAbility) => ability.pokemon_v2_ability.name,
 						)
 					return abilities
 				},

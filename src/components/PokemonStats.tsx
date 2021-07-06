@@ -18,22 +18,22 @@ function PokemonStats({
 	return (
 		<Container>
 			<GridItem>
-				<p>Base Experience</p>
-				<p>{baseExperience}</p>
+				<p>Base:</p>
+				<p>{baseExperience} exp</p>
 			</GridItem>
 			<GridItem>
-				<p>Height</p>
+				<p>Height:</p>
 				<p>{height}"</p>
 			</GridItem>
 			<GridItem>
-				<p>Weight</p>
+				<p>Weight:</p>
 				<p>{weight} lbs</p>
 			</GridItem>
 			<GridItem>
-				<p>Abilities</p>
+				<p>Abilities:</p>
 				<div>
 					{abilities.map((ability: string, idx: number) => (
-						<p key={`pokemon-ability-key-${idx}`}>{ability}</p>
+						<UpperCase key={`pokemon-ability-key-${idx}`}>{ability}</UpperCase>
 					))}
 				</div>
 			</GridItem>
@@ -43,14 +43,23 @@ function PokemonStats({
 
 const Container = styled.div`
 	display: block;
-	inline-size: min(600px, 100%);
+	/* inline-size: min(600px, 100%); */
 	margin-inline-start: auto;
+	margin-inline-end: auto;
+
+	@media screen and (orientation: landscape) and (max-height: 400px) {
+		margin-inline-start: initial;
+	}
 `
 
 const GridItem = styled.div`
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 10px;
+`
+
+const UpperCase = styled.p`
+	text-transform: capitalize;
 `
 
 export default PokemonStats
