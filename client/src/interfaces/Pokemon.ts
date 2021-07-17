@@ -19,6 +19,18 @@ interface IPokemonAbilities {
 	}
 }
 
+interface IPokemonGame {
+	pokemon_v2_version: {
+		pokemon_v2_versiongroup: {
+			name: string
+		}
+	}
+}
+
+interface IPokemonGameIndices {
+	pokemon_v2_pokemongameindices: IPokemonGame[]
+}
+
 interface IPokemonStats {
 	base_experience: string
 	height: string
@@ -30,6 +42,7 @@ export interface IPokemonContext {
 	name: string
 	pokemonId: number
 	color: string
+	game: string
 	spriteUrl: string
 	totalPokemon: number
 	progress: number

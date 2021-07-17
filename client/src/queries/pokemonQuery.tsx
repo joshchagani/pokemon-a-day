@@ -8,6 +8,13 @@ export const GET_POKEMONS = gql`
 			height
 			weight
 			pokemon_species_id
+			pokemon_v2_pokemongameindices(limit: 1) {
+				pokemon_v2_version {
+					pokemon_v2_versiongroup {
+						name
+					}
+				}
+			}
 			pokemon_v2_pokemonspecy {
 				pokemon_v2_pokemoncolor {
 					name

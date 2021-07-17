@@ -19,9 +19,10 @@ export const pokemonMachine = createMachine<any>({
 		dataRef: null,
 	},
 	states: {
+		pause: {},
 		idle: {
 			after: {
-				1000: { target: 'gather' },
+				500: { target: 'gather' },
 			},
 		},
 		gather: {

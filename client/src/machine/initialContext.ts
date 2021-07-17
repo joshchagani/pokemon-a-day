@@ -12,6 +12,7 @@ const initialContext: IPokemonContext = {
 	weight: 0,
 	abilities: ['', ''],
 	types: ['', ''],
+	game: 'red-blue',
 }
 
 export default initialContext

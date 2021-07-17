@@ -47,6 +47,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 							'getAbilities',
 							'getBaseExperience',
 							'getColor',
+							'getFirstGameAppearance',
 							'getHeight',
 							'getName',
 							'getSpriteUrl',
@@ -76,6 +77,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					},
 				},
 			},
+			pause: {},
 			pokePicker: {
 				id: 'random-pokemon-id',
 				entry: 'getRandomId',
@@ -95,6 +97,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 							'getAbilities',
 							'getBaseExperience',
 							'getColor',
+							'getFirstGameAppearance',
 							'getHeight',
 							'getName',
 							'getSpriteUrl',
@@ -151,6 +154,9 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 				color: (_, event) =>
 					event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemonspecy
 						.pokemon_v2_pokemoncolor.name,
+			}),
+			getFirstGameAppearance: assign({
+				game: (_, event) => 'red-blud',
 			}),
 			getHeight: assign({
 				height: (_, event) => event.data.pokemon_v2_pokemon[0].height,
@@ -218,6 +224,15 @@ function invokeMockFetch(): Promise<any> {
 					height: 4,
 					weight: 60,
 					pokemon_species_id: 25,
+					pokemon_v2_pokemongameindices: [
+						{
+							pokemon_v2_version: {
+								pokemon_v2_versiongroup: {
+									name: 'red-blue',
+								},
+							},
+						},
+					],
 					pokemon_v2_pokemonspecy: {
 						pokemon_v2_pokemoncolor: {
 							name: 'red',
@@ -258,6 +273,7 @@ function invokePokePicker(maxNumber: number): number {
 	let newNum = ts
 	while (newNum > maxNumber) {
 		newNum = parseInt(ts.toString().substring(indexer, indexer + 3))
+		indexer--
 	}
 	console.log('local', dateTimeLocal)
 	console.log('UTC', ts)
