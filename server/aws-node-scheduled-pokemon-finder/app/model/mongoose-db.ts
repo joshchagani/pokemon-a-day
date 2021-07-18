@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import { connect, disconnect } from 'mongoose'
 
 const uri =
 	'mongodb+srv://' +
@@ -9,13 +9,12 @@ const uri =
 	`${process.env.DB_NAME}` +
 	'?retryWrites=true&w=majority'
 
-export default mongoose.connect(
-	uri,
-	{
+export const mongooseConnect = async (): Promise<any> => {
+	console.log('🔋 url', uri)
+	return await connect(uri, {
 		useUnifiedTopology: true,
 		useNewUrlParser: true,
-	},
-	() => {
-		console.log('connected to database')
-	},
-)
+	})
+}
+
+export const mongooseDisconnect = async () => disconnect()

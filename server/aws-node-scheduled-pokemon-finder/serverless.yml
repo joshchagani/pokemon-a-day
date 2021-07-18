@@ -6,8 +6,7 @@ plugins:
   - serverless-plugin-typescript
   - serverless-offline
 
-custom:
-  dotenvVars: ${file(env-config.js)}
+useDotenv: true
 
 provider:
   name: aws
@@ -17,12 +16,6 @@ provider:
 functions:
   cronHandler:
     handler: app/handler.run
-    environments:
-      DB_USER: ${self:custom.dotenvVars.DB_USER}
-      DB_PASSWORD: ${self:custom.dotenvVars.DB_PASSWORD}
-      DB_CLUSTER: ${self:custom.dotenvVars.DB_CLUSTER}
-      DB_URI: ${self:custom.dotenvVars.DB_URI}
-      DB_NAME: ${self:custom.dotenvVars.DB_NAME}
     events:
       # Invoke Lambda function every 2nd minute from Mon-Fri
       - schedule: cron(0/2 * ? * MON-FRI *)
