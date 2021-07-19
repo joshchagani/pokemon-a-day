@@ -24,8 +24,4 @@ const pokemonSchema = new Schema<IPokemon>({
 	dateEpochUTC: Number,
 })
 
-export const PokemonModel = model<IPokemon>(
-	'Pokemon',
-	pokemonSchema,
-	'pokemons',
-)
+export const PokemonModel = model<IPokemon>('Pokemon', pokemonSchema)

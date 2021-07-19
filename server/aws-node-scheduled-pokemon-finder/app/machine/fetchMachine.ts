@@ -4,15 +4,13 @@ import {
 	InMemoryCache,
 	NormalizedCacheObject,
 	ApolloQueryResult,
-} from '@apollo/client'
+} from '@apollo/client/core'
 import { DateTime } from 'luxon'
 import { GET_POKEMONS } from '../queries/pokemonQuery'
 import 'cross-fetch/polyfill'
 
-const FALLBACK_TOTAL_POKEMON_COUNT = 898
 const FALLBACK_TOTAL_POKEMON_ID = 1
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
-const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
 
 const client = new ApolloClient<NormalizedCacheObject>({
 	uri: GRAPHQL_URL,
@@ -23,13 +21,12 @@ interface IPokemon {
 	pokemon_v2_pokemonspeciesname: ApolloQueryResult<any>
 }
 
-interface IPokemonContext {
+export interface IPokemonContext {
 	name: string
 	color: string
 	spriteUrl: string
 	totalPokemon: number
 	pokemonId: number
-	progress: number
 	baseExperience: number
 	height: number
 	weight: number
@@ -39,7 +36,7 @@ interface IPokemonContext {
 }
 
 type PokemonState =
-	| { value: 'mockCounter'; context: IPokemonContext }
+	| { value: 'mockPokemon'; context: IPokemonContext }
 	| {
 			value: 'pokeCounter'
 			context: IPokemonContext & {
@@ -56,22 +53,21 @@ type PokemonState =
 	| { value: 'success'; context: IPokemonContext & {} }
 	| { value: 'failure'; context: IPokemonContext & {} }
 
-export const createPokemonDataMachine = createMachine<
+export const pokemonDataMachine = createMachine<
 	IPokemonContext,
 	any,
 	PokemonState
 >(
 	{
 		id: 'pokemon-data',
-		initial: 'pokeCounter',
-		// initial: 'mockCounter',
+		initial: 'pokePicker',
+		// initial: 'mockPokemon',
 		context: {
 			name: '',
 			color: '',
 			spriteUrl: '',
 			totalPokemon: 0,
 			pokemonId: 0,
-			progress: 0,
 			baseExperience: 0,
 			height: 0,
 			weight: 0,
@@ -80,7 +76,7 @@ export const createPokemonDataMachine = createMachine<
 			game: 'red-blue',
 		},
 		states: {
-			mockCounter: {
+			mockPokemon: {
 				invoke: {
 					src: 'getMockPokemon',
 					onDone: {
@@ -102,25 +98,6 @@ export const createPokemonDataMachine = createMachine<
 					},
 				},
 			},
-			pokeCounter: {
-				invoke: {
-					id: 'fetch-pokemon-count',
-					src: 'getTotalPokemonCount',
-					onDone: {
-						target: 'pokePicker',
-						actions: assign({
-							totalPokemon: (_, event) => event.data,
-							progress: (_) => 30,
-						}),
-					},
-					onError: {
-						target: 'failure',
-						actions: assign({
-							totalPokemon: (_) => FALLBACK_TOTAL_POKEMON_COUNT,
-						}),
-					},
-				},
-			},
 			pause: {},
 			pokePicker: {
 				id: 'random-pokemon-id',
@@ -128,7 +105,6 @@ export const createPokemonDataMachine = createMachine<
 				always: {
 					target: 'query',
 					cond: 'isIdDetermined',
-					actions: assign({ progress: (_) => 80 }),
 				},
 			},
 			query: {
@@ -147,9 +123,6 @@ export const createPokemonDataMachine = createMachine<
 							'getSpriteUrl',
 							'getTypes',
 							'getWeight',
-							assign({
-								progress: (_) => 100,
-							}),
 						],
 					},
 					onError: {
@@ -171,7 +144,6 @@ export const createPokemonDataMachine = createMachine<
 	},
 	{
 		services: {
-			getTotalPokemonCount: (_) => invokeFetchPokemonCount,
 			getPokemon: (context) => invokeFetchPokemon(context.pokemonId),
 			getMockPokemon: () => invokeMockFetch,
 		},
@@ -200,7 +172,7 @@ export const createPokemonDataMachine = createMachine<
 						.pokemon_v2_pokemoncolor.name,
 			}),
 			getFirstGameAppearance: assign({
-				game: (_, event) => 'red-blud',
+				game: (_, event) => 'red-blue',
 			}),
 			getHeight: assign({
 				height: (_, event) => event.data.pokemon_v2_pokemon[0].height,
@@ -243,12 +215,6 @@ export const createPokemonDataMachine = createMachine<
 		},
 	},
 )
-
-async function invokeFetchPokemonCount(): Promise<number> {
-	const response = await fetch(POKEMON_COUNT_URL)
-	const { count } = await response.json()
-	return count
-}
 
 async function invokeFetchPokemon(pokemonId: number): Promise<IPokemon> {
 	const { data } = await client.query({
@@ -319,8 +285,7 @@ function invokePokePicker(maxNumber: number): number {
 		newNum = parseInt(ts.toString().substring(indexer, indexer + 3))
 		indexer--
 	}
-	console.log('local', dateTimeLocal)
-	console.log('UTC', ts)
-	console.log('pokemon number', newNum)
+	console.log('⏱ UTC', ts)
+	console.log('#️⃣ pokemon number', newNum)
 	return newNum
 }

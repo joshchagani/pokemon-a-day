@@ -1,2 +1,2 @@
 export * from './databaseMachine'
-// export * from './fetchMachine'
+export * from './fetchMachine'

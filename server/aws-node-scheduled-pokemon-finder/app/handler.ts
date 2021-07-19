@@ -1,6 +1,5 @@
 import { createMachine, assign, interpret } from 'xstate'
 import { Handler, Context } from 'aws-lambda'
-import { PokemonModel } from './model'
 import { databaseMachine } from './machine'
 import dotenv from '../env-config'
 

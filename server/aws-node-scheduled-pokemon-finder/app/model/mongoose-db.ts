@@ -10,10 +10,10 @@ const uri =
 	'?retryWrites=true&w=majority'
 
 export const mongooseConnect = async (): Promise<any> => {
-	console.log('🔋 url', uri)
 	return await connect(uri, {
 		useUnifiedTopology: true,
 		useNewUrlParser: true,
+		useCreateIndex: true,
 	})
 }
 
