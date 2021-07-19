@@ -4,18 +4,18 @@ frameworkVersion: '2'
 
 plugins:
   - serverless-plugin-typescript
-  - serverless-offline
 
 useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
+  region: us-east-1
   lambdaHashingVersion: 20201221
 
 functions:
   cronHandler:
     handler: app/handler.run
     events:
-      # Invoke Lambda function every 2nd minute from Mon-Fri
-      - schedule: cron(0/2 * ? * MON-FRI *)
+      # Every day at midnight - 12am
+      - schedule: cron(0 0 * * ? *)

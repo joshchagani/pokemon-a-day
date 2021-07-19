@@ -1,6 +1,11 @@
 import { assign, createMachine } from 'xstate'
-import { mongooseConnect, mongooseDisconnect, PokemonModel } from '../model'
-import { pokemonDataMachine, IPokemonContext } from './fetchMachine'
+import {
+	mongooseConnect,
+	mongooseDisconnect,
+	PokemonModel,
+	IPokemon,
+} from '../model'
+import { pokemonDataMachine } from './fetchMachine'
 import 'cross-fetch/polyfill'
 
 const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
@@ -8,7 +13,7 @@ const FALLBACK_TOTAL_POKEMON_COUNT = 800
 
 interface DatabaseContext {
 	dbConnectionStatus: string
-	pokemonInfo: IPokemonContext | { totalPokemon: number }
+	pokemonInfo: IPokemon | { currentTotalPokemon: number }
 }
 
 type DatabaseState =
@@ -18,7 +23,9 @@ type DatabaseState =
 	  }
 	| {
 			value: 'fetch'
-			context: DatabaseContext & { pokemonInfo: { totalPokemon: number } }
+			context: DatabaseContext & {
+				pokemonInfo: { currentTotalPokemon: number }
+			}
 	  }
 	| { value: 'write'; context: DatabaseContext }
 	| { value: 'disconnect'; context: DatabaseContext }
@@ -35,7 +42,7 @@ export const databaseMachine = createMachine<
 		initial: 'initial',
 		context: {
 			dbConnectionStatus: 'waiting',
-			pokemonInfo: { totalPokemon: 0 },
+			pokemonInfo: { currentTotalPokemon: 0 },
 		},
 		states: {
 			initial: {
@@ -76,7 +83,10 @@ export const databaseMachine = createMachine<
 								actions: assign({
 									pokemonInfo: (context, event) => {
 										console.log('⚡️ pokemon count', event.data)
-										return { ...context.pokemonInfo, totalPokemon: event.data }
+										return {
+											...context.pokemonInfo,
+											currentTotalPokemon: event.data,
+										}
 									},
 								}),
 							},
@@ -86,7 +96,7 @@ export const databaseMachine = createMachine<
 										console.log('😬 fallback count')
 										return {
 											...context.pokemonInfo,
-											totalPokemon: FALLBACK_TOTAL_POKEMON_COUNT,
+											currentTotalPokemon: FALLBACK_TOTAL_POKEMON_COUNT,
 										}
 									},
 								}),
@@ -100,10 +110,11 @@ export const databaseMachine = createMachine<
 					id: 'determine-todays-pokemon',
 					src: pokemonDataMachine,
 					data: {
-						totalPokemon: (context) => context.pokemonInfo.totalPokemon,
+						currentTotalPokemon: (context) =>
+							context.pokemonInfo.currentTotalPokemon,
 					},
 					onDone: {
-						target: 'disconnect',
+						target: 'write',
 						actions: assign({
 							pokemonInfo: (_, event) => {
 								console.log('📈 pokemon data', event.data)
@@ -114,22 +125,38 @@ export const databaseMachine = createMachine<
 					onError: {},
 				},
 			},
-			write: {},
+			write: {
+				invoke: {
+					id: 'writing-to-db',
+					src: 'writePokemonData',
+					onDone: {
+						target: 'disconnect',
+						actions: () => console.log('📝 write successful'),
+					},
+					onError: {
+						target: 'disconnect',
+						actions: () => console.log('💥 pokemon not saved'),
+					},
+				},
+			},
 			disconnect: {
 				invoke: {
 					id: 'disconnect-from-db',
 					src: () => mongooseDisconnect(),
 					onDone: {
-						target: 'pause',
-						actions: () => console.log('❌ disconnected!'),
+						target: 'success',
+						actions: () => console.log('🔌 disconnected!'),
 					},
 					onError: {
-						target: 'pause',
-						actions: () => console.log('failure to disconnect'),
+						target: 'failure',
+						actions: () => console.log('❌ failure to disconnect'),
 					},
 				},
 			},
 			pause: {},
+			success: {
+				type: 'final',
+			},
 			failure: {},
 		},
 	},
@@ -137,11 +164,13 @@ export const databaseMachine = createMachine<
 		guards: {
 			isReadyToWrite: (context) =>
 				context.dbConnectionStatus === 'connected' &&
-				context.pokemonInfo.totalPokemon > 0,
+				context.pokemonInfo.currentTotalPokemon > 0,
 		},
 		services: {
 			connectToDatabase: () => mongooseConnect,
 			getTotalPokemonCount: (_) => invokeFetchPokemonCount,
+			writePokemonData: (context) =>
+				invokeDatabaseSave(context.pokemonInfo as IPokemon),
 		},
 	},
 )
@@ -155,4 +184,9 @@ async function invokeFetchPokemonCount(): Promise<number> {
 	})
 	const { count } = await response.json()
 	return count
+}
+
+async function invokeDatabaseSave(pokemonInfo: IPokemon): Promise<any> {
+	const pokemon = new PokemonModel(pokemonInfo)
+	return await pokemon.save()
 }
