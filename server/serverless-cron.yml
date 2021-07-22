@@ -1,0 +1,25 @@
+service: aws-node-scheduled-pokemon-finder
+custom: ${file(./serverless.common.yml):custom}
+
+frameworkVersion: ${self:custom.frameworkVersion}
+
+plugins:
+  - serverless-plugin-typescript
+
+useDotenv: ${self:custom.useDotenv}
+
+provider:
+  memorySize: 512
+  name: ${self:custom.providerName}
+  runtime: ${self:custom.providerRuntime}
+  region: ${self:custom.providerRegion}
+  lambdaHashingVersion: ${self:custom.providerLambdaHashingVersion}
+
+functions:
+  cronHandler:
+    handler: aws-node-scheduled-pokemon-finder/app/handler.run
+    name: Pokémon CRON
+    description: Gets tomorrow's Pokémon at midnight GMT
+    events:
+      # Every day at 12:01am GMT
+      - schedule: cron(1 0 * * ? *)

@@ -1,0 +1,7 @@
+custom:
+  frameworkVersion: '2'
+  useDotenv: true
+  providerName: aws
+  providerRuntime: nodejs14.x
+  providerRegion: us-east-1
+  providerLambdaHashingVersion: 20201221

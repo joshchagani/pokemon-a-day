@@ -6,7 +6,7 @@ import {
 	IPokemon,
 } from '../model'
 import { pokemonDataMachine } from './fetchMachine'
-import 'cross-fetch/polyfill'
+import { fetch } from 'cross-fetch'
 
 const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
 const FALLBACK_TOTAL_POKEMON_COUNT = 800
@@ -110,7 +110,7 @@ export const databaseMachine = createMachine<
 					id: 'determine-todays-pokemon',
 					src: pokemonDataMachine,
 					data: {
-						currentTotalPokemon: (context) =>
+						currentTotalPokemon: (context: DatabaseContext) =>
 							context.pokemonInfo.currentTotalPokemon,
 					},
 					onDone: {

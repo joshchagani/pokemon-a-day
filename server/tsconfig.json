@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ES2017",
+		"noImplicitAny": true,
+		"preserveConstEnums": true,
+		"outDir": "./build",
+		"sourceMap": true,
+		"baseUrl": "/"
+	},
+	"include": ["aws-node-scheduled-pokemon-finder/**/*"],
+	"exclude": ["./.build", "./build"]
+}

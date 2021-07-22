@@ -1,26 +1,8 @@
-import { actions, assign, createMachine } from 'xstate'
-import {
-	ApolloClient,
-	InMemoryCache,
-	NormalizedCacheObject,
-	ApolloQueryResult,
-} from '@apollo/client/core'
-import { DateTime } from 'luxon'
-import { GET_POKEMONS } from '../queries/pokemonQuery'
+import { createMachine, assign } from 'xstate'
+import { invokePokePicker, invokeFetchPokemon, convertToMeters } from '../utils'
 import { IPokemon } from '../model'
-import 'cross-fetch/polyfill'
 
 const FALLBACK_TOTAL_POKEMON_ID = 1
-const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
-
-const client = new ApolloClient<NormalizedCacheObject>({
-	uri: GRAPHQL_URL,
-	cache: new InMemoryCache(),
-})
-
-interface IPokemonApollo {
-	pokemon_v2_pokemonspeciesname: ApolloQueryResult<any>
-}
 
 type PokemonState =
 	| { value: 'mockPokemon'; context: IPokemon }
@@ -146,25 +128,26 @@ export const pokemonDataMachine = createMachine<IPokemon, any, PokemonState>(
 					return abilities
 				},
 			}),
+
 			getBaseExperience: assign({
 				pokemonBaseExp: (_, event) =>
 					event.data.pokemon_v2_pokemon[0].base_experience,
 			}),
+
 			getColor: assign({
 				pokemonColor: (_, event) =>
 					event.data.pokemon_v2_pokemon[0].pokemon_v2_pokemonspecy
 						.pokemon_v2_pokemoncolor.name,
 			}),
+
 			getGameAppearances: assign({
 				pokemonGameAppearances: (_, event) => ['red-blue'],
 			}),
+
 			getHeight: assign({
 				pokemonHeight: (_, event) =>
 					convertToMeters(event.data.pokemon_v2_pokemon[0].height),
 			}),
-			// getRandomId: assign({
-			// 	pokemonId: (context) => invokePokePicker(context.currentTotalPokemon),
-			// }),
 
 			getRandomId: assign((context) => {
 				const { pokemonId, dateEpochUTC } = invokePokePicker(
@@ -179,6 +162,7 @@ export const pokemonDataMachine = createMachine<IPokemon, any, PokemonState>(
 			getName: assign({
 				pokemonName: (_, event) => event.data.pokemon_v2_pokemon[0].name,
 			}),
+
 			getSpriteUrl: assign({
 				pokemonSpriteUrl: (context) => {
 					// Other possible sprite options
@@ -187,6 +171,7 @@ export const pokemonDataMachine = createMachine<IPokemon, any, PokemonState>(
 					return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${context.pokemonId}.png`
 				},
 			}),
+
 			getTypes: assign({
 				pokemonTypes: (_, event) => {
 					interface IType {
@@ -202,6 +187,7 @@ export const pokemonDataMachine = createMachine<IPokemon, any, PokemonState>(
 					return types
 				},
 			}),
+
 			getWeight: assign({
 				pokemonWeight: (_, event) =>
 					event.data.pokemon_v2_pokemon[0].weight / 10,
@@ -212,14 +198,6 @@ export const pokemonDataMachine = createMachine<IPokemon, any, PokemonState>(
 		},
 	},
 )
-
-async function invokeFetchPokemon(pokemonId: number): Promise<IPokemonApollo> {
-	const { data } = await client.query({
-		query: GET_POKEMONS,
-		variables: { id: pokemonId },
-	})
-	return data
-}
 
 function invokeMockFetch(): Promise<any> {
 	return new Promise((resolve, reject) =>
@@ -268,30 +246,4 @@ function invokeMockFetch(): Promise<any> {
 			],
 		}),
 	)
-}
-
-interface IDatePicker {
-	pokemonId: number
-	dateEpochUTC: number
-}
-
-function invokePokePicker(maxNumber: number): IDatePicker {
-	const dateTimeLocal = DateTime.now()
-	const year = dateTimeLocal.year
-	const month = dateTimeLocal.month
-	const day = dateTimeLocal.day
-	const dateEpochUTC = DateTime.utc(year, month, day).toMillis()
-	let indexer = 5
-	let pokemonId = dateEpochUTC
-	while (pokemonId > maxNumber) {
-		pokemonId = parseInt(
-			dateEpochUTC.toString().substring(indexer, indexer + 3),
-		)
-		indexer--
-	}
-	return { pokemonId, dateEpochUTC }
-}
-
-function convertToMeters(num: number): number {
-	return num / 10
 }
