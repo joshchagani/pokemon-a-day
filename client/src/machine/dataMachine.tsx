@@ -1,7 +1,7 @@
 import { assign, createMachine } from 'xstate'
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { DateTime } from 'luxon'
-import { dateSubstringer, upperCaser } from '../utils'
+import { gramsToPounds, metricToFeet, upperCaser } from '../utils'
 import { GET_POKEMONS } from '../queries/pokemonQuery'
 import initialContext from './initialContext'
 import type { IPokemon, IPokemonContext } from '../interfaces/Pokemon'
@@ -159,7 +159,8 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 				game: (_, event) => 'red-blud',
 			}),
 			getHeight: assign({
-				height: (_, event) => event.data.pokemon_v2_pokemon[0].height,
+				height: (_, event) =>
+					metricToFeet(event.data.pokemon_v2_pokemon[0].height),
 			}),
 			getName: assign({
 				name: (_, event) => event.data.pokemon_v2_pokemon[0].name,
@@ -191,7 +192,8 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 				},
 			}),
 			getWeight: assign({
-				weight: (_, event) => event.data.pokemon_v2_pokemon[0].weight,
+				weight: (_, event) =>
+					gramsToPounds(event.data.pokemon_v2_pokemon[0].weight),
 			}),
 		},
 		guards: {
