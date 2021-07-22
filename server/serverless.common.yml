@@ -5,3 +5,8 @@ custom:
   providerRuntime: nodejs14.x
   providerRegion: us-east-1
   providerLambdaHashingVersion: 20201221
+  DB_USER: ${env:DB_USER}
+  DB_PASSWORD: ${env:DB_PASSWORD}
+  DB_CLUSTER: ${env:DB_CLUSTER}
+  DB_URI: ${env:DB_URI}
+  DB_NAME: ${env:DB_NAME}

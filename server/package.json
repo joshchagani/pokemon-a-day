@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"invoke:cron": "serverless invoke local --function cronHandler --config ./serverless-cron.yml",
-		"deploy:cron": "serverless deploy --config ./serverless-cron.yml"
+		"deploy:cron": "serverless deploy --config ./serverless-cron.yml --aws-profile pokemonCron"
 	},
 	"devDependencies": {
 		"@aws-sdk/types": "^3.20.0",
