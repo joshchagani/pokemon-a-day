@@ -4,7 +4,7 @@ import { animated as a, useSpring, useTransition, config } from 'react-spring'
 import styled from 'styled-components'
 import { pokemonMachine } from './machine/uiMachine'
 import initialContext from './machine/initialContext'
-import { POKEMON_COLORS } from './utils'
+import { POKEMON_COLORS, removeHyphens } from './utils'
 import type { IPokemonProvider, IPokemonContext } from './interfaces/Pokemon'
 
 const PokemonSprite = lazy(() => import('./components/PokemonSprite'))
@@ -57,7 +57,7 @@ function App({}: AppProps) {
 								<SpriteContainer style={styles}>
 									<div>
 										<PokemonName>
-											#{ctx.pokemonId} {ctx.name}
+											#{ctx.pokemonId} {removeHyphens(ctx.name)}
 										</PokemonName>
 										<PokemonType>
 											{ctx.types.map((type: string, idx: number) => (

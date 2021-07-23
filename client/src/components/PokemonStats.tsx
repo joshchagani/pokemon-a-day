@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { removeHyphens } from '../utils'
 
 interface IPokemonStats {
 	abilities: string[]
@@ -23,7 +24,7 @@ function PokemonStats({
 			</GridItem>
 			<GridItem>
 				<p>Height:</p>
-				<p>{height}"</p>
+				<p>{height} ft</p>
 			</GridItem>
 			<GridItem>
 				<p>Weight:</p>
@@ -33,7 +34,9 @@ function PokemonStats({
 				<p>Abilities:</p>
 				<div>
 					{abilities.map((ability: string, idx: number) => (
-						<UpperCase key={`pokemon-ability-key-${idx}`}>{ability}</UpperCase>
+						<UpperCase key={`pokemon-ability-key-${idx}`}>
+							{removeHyphens(ability)}
+						</UpperCase>
 					))}
 				</div>
 			</GridItem>

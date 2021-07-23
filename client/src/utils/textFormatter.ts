@@ -1,3 +1,5 @@
+export const removeHyphens = (str: string): string => str.replace(/-/g, ' ')
+
 export const upperCaser = (str: string): string => {
 	return str
 		.split('-')
