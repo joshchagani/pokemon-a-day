@@ -1,18 +1,18 @@
 import { Schema, model } from 'mongoose'
 
 export interface IPokemon {
-	currentTotalPokemon: number
-	dateEpochUTC: number
-	pokemonAbilities: string[]
-	pokemonBaseExp: number
-	pokemonColor: string
-	pokemonGameAppearances: string[]
-	pokemonHeight: number
-	pokemonId: number
-	pokemonName: string
-	pokemonSpriteUrl: string
-	pokemonTypes: string[]
-	pokemonWeight: number
+	currentTotalPokemon?: number
+	dateEpochUTC?: number
+	pokemonAbilities?: string[]
+	pokemonBaseExp?: number
+	pokemonColor?: string
+	pokemonGameAppearances?: string[]
+	pokemonHeight?: number
+	pokemonId?: number
+	pokemonName?: string
+	pokemonSpriteUrl?: string
+	pokemonTypes?: string[]
+	pokemonWeight?: number
 }
 
 const pokemonSchema = new Schema<IPokemon>({

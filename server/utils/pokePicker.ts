@@ -7,6 +7,15 @@ interface IDatePicker {
 	dateEpochUTC: number
 }
 
+export function invokeTodaysEpoch(date: number): number {
+	const dateTimeToday = DateTime.fromMillis(date)
+	const year = dateTimeToday.year
+	const month = dateTimeToday.month
+	const day = dateTimeToday.day
+	const dateEpochUTC = DateTime.utc(year, month, day).toMillis()
+	return dateEpochUTC
+}
+
 export function invokePokePicker(maxNumber: number): IDatePicker {
 	const dateTimeTomorrow = DateTime.now().plus({ days: TWO_DAYS })
 	const year = dateTimeTomorrow.year

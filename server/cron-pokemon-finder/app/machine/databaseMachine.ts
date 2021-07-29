@@ -4,7 +4,7 @@ import {
 	mongooseDisconnect,
 	PokemonModel,
 	IPokemon,
-} from '../model'
+} from '../../../model'
 import { pokemonDataMachine } from './fetchMachine'
 import { fetch } from 'cross-fetch'
 
@@ -167,7 +167,7 @@ export const databaseMachine = createMachine<
 				context.pokemonInfo.currentTotalPokemon > 0,
 		},
 		services: {
-			connectToDatabase: () => mongooseConnect,
+			connectToDatabase: () => mongooseConnect('DB_USER', 'DB_PASSWORD'),
 			getTotalPokemonCount: (_) => invokeFetchPokemonCount,
 			writePokemonData: (context) =>
 				invokeDatabaseSave(context.pokemonInfo as IPokemon),

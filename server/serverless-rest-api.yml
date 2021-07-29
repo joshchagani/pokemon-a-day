@@ -1,4 +1,4 @@
-service: cron-pokemon-finder
+service: rest-pokemon-api
 custom: ${file(./serverless.common.yml):custom}
 
 frameworkVersion: ${self:custom.frameworkVersion}
@@ -15,16 +15,18 @@ provider:
   region: ${self:custom.providerRegion}
   lambdaHashingVersion: ${self:custom.providerLambdaHashingVersion}
   environment:
-    DB_USER: ${self:custom.DB_USER}
-    DB_PASSWORD: ${self:custom.DB_PASSWORD}
+    DB_READER_USER: ${self:custom.DB_USER}
+    DB_READER_PASSWORD: ${self:custom.DB_PASSWORD}
     DB_CLUSTER: ${self:custom.DB_CLUSTER}
     DB_URI: ${self:custom.DB_URI}
     DB_NAME: ${self:custom.DB_NAME}
 
 functions:
-  cronHandler:
-    handler: cron-pokemon-finder/app/handler.run
+  restHandler:
+    handler: rest-pokemon-api/app/handler.getPokemon
     description: Gets tomorrow's Pokemon at midnight GMT
     events:
-      # Every day at 12:01am GMT
-      - schedule: cron(1 0 * * ? *)
+      - http:
+          path: /{id}
+          method: get
+          cors: true

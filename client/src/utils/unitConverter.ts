@@ -1,4 +1,4 @@
-const GRAM_TO_POUND = 0.00220462
+const GRAM_TO_POUND = 0.220462
 const METER_TO_FEET = 3.28084
 
 export const gramsToPounds = (grams: number): number => {

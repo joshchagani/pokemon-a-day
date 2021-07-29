@@ -8,6 +8,11 @@
 		"sourceMap": true,
 		"baseUrl": "/"
 	},
-	"include": ["aws-node-scheduled-pokemon-finder/**/*"],
+	"include": [
+		"cron-pokemon-finder/**/*",
+		"rest-pokemon-api/**/*",
+		"model/**/*",
+		"utils/**/*"
+	],
 	"exclude": ["./.build", "./build"]
 }

@@ -1,15 +1,19 @@
 import { connect, disconnect } from 'mongoose'
 
-const uri =
+const uriBuilder = (envUser: string, envPass: string) =>
 	'mongodb+srv://' +
-	`${process.env.DB_USER}:${process.env.DB_PASSWORD}` +
+	`${process.env[envUser]}:${process.env[envPass]}` +
 	'@' +
 	`${process.env.DB_CLUSTER}.${process.env.DB_URI}` +
 	'/' +
 	`${process.env.DB_NAME}` +
 	'?retryWrites=true&w=majority'
 
-export const mongooseConnect = async (): Promise<any> => {
+export const mongooseConnect = async (
+	envUser: string,
+	envPass: string,
+): Promise<any> => {
+	const uri = uriBuilder(envUser, envPass)
 	return await connect(uri, {
 		useUnifiedTopology: true,
 		useNewUrlParser: true,

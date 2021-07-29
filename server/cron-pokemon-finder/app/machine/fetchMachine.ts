@@ -1,6 +1,10 @@
 import { createMachine, assign } from 'xstate'
-import { invokePokePicker, invokeFetchPokemon, convertToMeters } from '../utils'
-import { IPokemon } from '../model'
+import {
+	invokePokePicker,
+	invokeFetchPokemon,
+	convertToMeters,
+} from '../../../utils'
+import { IPokemon } from '../../../model'
 
 const FALLBACK_TOTAL_POKEMON_ID = 1
 

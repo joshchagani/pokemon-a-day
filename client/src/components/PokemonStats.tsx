@@ -62,7 +62,9 @@ const GridItem = styled.div`
 `
 
 const UpperCase = styled.p`
-	text-transform: capitalize;
+	&::first-letter {
+		text-transform: uppercase;
+	}
 `
 
 export default PokemonStats

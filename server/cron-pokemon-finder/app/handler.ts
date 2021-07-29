@@ -1,11 +1,11 @@
 import { Context } from 'aws-lambda'
 import { interpret } from 'xstate'
 import { databaseMachine } from './machine'
-import dotenv from './env-config'
+import { env } from '../../utils'
 
 export const run = async (event: any, context: Context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	await dotenv
+	await env
 	const time = new Date()
 	console.log(`Your cron function "${context.functionName}" ran at ${time}`)
 	await setupMachine()

@@ -6,7 +6,10 @@
 	"license": "MIT",
 	"scripts": {
 		"invoke:cron": "serverless invoke local --function cronHandler --config ./serverless-cron.yml",
-		"deploy:cron": "serverless deploy --config ./serverless-cron.yml --aws-profile pokemonCron"
+		"deploy:cron": "serverless deploy --config ./serverless-cron.yml --aws-profile pokemonCron",
+		"invoke:api": "serverless invoke local --function restHandler --config ./serverless-rest-api.yml --data '{ \"queryStringParameters\": {\"id\":\"1627483571000\"}}'",
+		"invoke:apiFail": "serverless invoke local --function restHandler --config ./serverless-rest-api.yml",
+		"deploy:api": "serverless deploy --config ./serverless-rest-api.yml --aws-profile pokemonCron"
 	},
 	"devDependencies": {
 		"@aws-sdk/types": "^3.20.0",

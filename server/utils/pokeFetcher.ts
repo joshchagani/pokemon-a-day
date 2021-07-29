@@ -4,7 +4,7 @@ import {
 	NormalizedCacheObject,
 	ApolloQueryResult,
 } from '@apollo/client/core'
-import { GET_POKEMONS } from '../queries/pokemonQuery'
+import { GET_POKEMONS } from '../cron-pokemon-finder/app/queries/pokemonQuery'
 import 'cross-fetch/polyfill'
 
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
