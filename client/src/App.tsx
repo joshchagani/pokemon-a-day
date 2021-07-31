@@ -125,10 +125,7 @@ const SpriteContainer = styled(a.section)`
 const PokemonName = styled.h1`
 	font-size: min(2em, 7vw);
 	text-align: center;
-
-	&::first-letter {
-		text-transform: uppercase;
-	}
+	text-transform: capitalize
 `
 
 const PokemonType = styled.h2`

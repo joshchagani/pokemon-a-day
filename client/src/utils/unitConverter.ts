@@ -1,8 +1,9 @@
-const GRAM_TO_POUND = 0.220462
+const KILOGRAM_TO_POUND = 2.20462
 const METER_TO_FEET = 3.28084
+const SHIFT_TO_KILOGRAM = 10
 
-export const gramsToPounds = (grams: number): number => {
-	const conversion = grams * GRAM_TO_POUND
+export const gramsToPounds = (weight: number): number => {
+	const conversion = (weight / SHIFT_TO_KILOGRAM) * KILOGRAM_TO_POUND
 	const toFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 })
 	return parseFloat(toFormat.format(conversion))
 }

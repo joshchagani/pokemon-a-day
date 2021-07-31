@@ -1,7 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { createPokemonDataMachine } from './dataMachine'
 
-import initialContext from './initialContext'
 
 interface IPokemonMachineScheme {
 	states: {
@@ -53,13 +52,14 @@ export const pokemonMachine = createMachine<any>({
 		},
 		present: {},
 	},
-})
+	})
 
 async function invokeLambdaTest(): Promise<any> {
-	const url = 'https://api.todayspokemon.com?id=1627483571000'
+	const dateEpoch = Date.now()
+	const url = `https://api.todayspokemon.com?id=${dateEpoch}`
 	const response = await fetch(url, {
 		method: 'GET',
-		mode: 'no-cors',
+		mode: 'same-origin',
 		headers: {
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
