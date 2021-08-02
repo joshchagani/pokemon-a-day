@@ -65,9 +65,9 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					id: 'pokemon-lambda-api',
 					src: 'getPokemon',
 					onDone: {
-						target: 'pokeCounter',
+						target: 'success',
 						actions: assign((_, event) => {
-							const apiData = event.data
+							const { data: apiData } = event.data
 							console.log('⚡️ apiData', apiData)
 							const {
 								pokemonAbilities,
