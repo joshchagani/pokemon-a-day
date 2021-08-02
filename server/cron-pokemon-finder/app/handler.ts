@@ -5,7 +5,7 @@ import { env } from '../../utils'
 
 export const run = async (event: any, context: Context) => {
 	context.callbackWaitsForEmptyEventLoop = false
-	await env
+	await env()
 	const time = new Date()
 	console.log(`Your cron function "${context.functionName}" ran at ${time}`)
 	await setupMachine()

@@ -27,6 +27,6 @@ functions:
     description: Gets tomorrow's Pokemon at midnight GMT
     events:
       - http:
-          path: /{id}
+          path: /
           method: get
           cors: true
