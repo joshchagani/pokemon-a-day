@@ -21,11 +21,18 @@ function PokemonSprite({ id, name, spriteUrl }: IPokemonSprite) {
 
 const Sprite = styled.img`
 	display: block;
-	inline-size: min(100%, 50vh);
+	inline-size: 100%;
 	block-size: auto;
 	margin-inline-start: auto;
 	margin-inline-end: auto;
 	aspect-ratio: 1/1;
+	grid-column: 1 / -1;
+	grid-row: 2 / span 1;
+
+	@media screen and (orientation: landscape) {
+		grid-column: 1 / span 1;
+		grid-row: 1 / -1;
+	}
 `
 
 export default PokemonSprite

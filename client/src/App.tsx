@@ -55,7 +55,12 @@ function App({}: AppProps) {
 						(styles, item) =>
 							item && (
 								<SpriteContainer style={styles}>
-									<div>
+									<PokemonSprite
+										id={ctx.pokemonId as number}
+										name={ctx.name as string}
+										spriteUrl={ctx.spriteUrl as string}
+									/>
+									<PokemonId>
 										<PokemonName>
 											#{ctx.pokemonId} {removeHyphens(ctx.name)}
 										</PokemonName>
@@ -66,18 +71,15 @@ function App({}: AppProps) {
 												</span>
 											))}
 										</PokemonType>
-										<PokemonSprite
-											id={ctx.pokemonId as number}
-											name={ctx.name as string}
-											spriteUrl={ctx.spriteUrl as string}
+									</PokemonId>
+									<PokemonInfo>
+										<PokemonStats
+											abilities={ctx.abilities}
+											baseExperience={ctx.baseExperience}
+											height={ctx.height}
+											weight={ctx.weight}
 										/>
-									</div>
-									<PokemonStats
-										abilities={ctx.abilities}
-										baseExperience={ctx.baseExperience}
-										height={ctx.height}
-										weight={ctx.weight}
-									/>
+									</PokemonInfo>
 								</SpriteContainer>
 							),
 					)}
@@ -92,45 +94,56 @@ const Main = styled(a.main)`
 	align-items: center;
 	justify-content: center;
 	min-block-size: 100vh;
-	min-inline-size: 100%;
+	min-inline-size: 100vw;
 	background-color: var(--bg-loading);
 	font-size: min(var(--main-font-size), 4vw);
-	padding-block-end: 1.5rem;
-
-	@media screen and (min-width: 400px) {
-		padding-block-start: 1rem;
-	}
 `
 
 const SpriteContainer = styled(a.section)`
 	display: grid;
-	inline-size: min(800px, 90%);
+	align-items: start;
 	grid-template-columns: 1fr;
-	grid-template-rows: min-content auto;
-	grid-template-areas: 'pokemon-name' 'pokemon-stats';
+	grid-template-rows: repeat(3, min-content);
+	padding-inline: 10px;
 
-	@media screen and (orientation: landscape) and (max-height: 400px) {
-		inline-size: 100%;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr;
-
-		h1,
-		p {
-			margin-block-start: 0;
-			font-size: 1rem;
-		}
+	@media screen and (orientation: landscape) {
+		font-size: min(var(--main-font-size), 4vh);
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: min-content max-content;
+		align-items: start;
+		// inline-size: 100%;
+		// grid-template-rows: 1fr;
 	}
 `
 
 const PokemonName = styled.h1`
 	font-size: min(2em, 7vw);
-	text-align: center;
-	text-transform: capitalize
+	text-transform: capitalize;
 `
 
 const PokemonType = styled.h2`
 	font-size: min(1em, 4vw);
+`
+
+const PokemonId = styled.div`
+	grid-column: 1 / -1;
+	grid-row: 1 / span 1;
 	text-align: center;
+
+	@media screen and (orientation: landscape) {
+		grid-column: 2 / -1;
+		grid-row: 1 / span 1;
+	}
+`
+
+const PokemonInfo = styled.div`
+	grid-column: 1 / -1;
+	grid-row: 3 / -1;
+
+	@media screen and (orientation: landscape) {
+		grid-column: 2 / -1;
+		grid-row: 2 / -1;
+	}
 `
 
 export default App

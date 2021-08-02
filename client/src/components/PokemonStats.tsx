@@ -6,7 +6,7 @@ interface IPokemonStats {
 	abilities: string[]
 	baseExperience: number
 	height: number
-	weight: number
+	weight: string
 }
 
 function PokemonStats({
@@ -46,7 +46,6 @@ function PokemonStats({
 
 const Container = styled.div`
 	display: block;
-	/* inline-size: min(600px, 100%); */
 	margin-inline-start: auto;
 	margin-inline-end: auto;
 

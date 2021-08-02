@@ -1,7 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { createPokemonDataMachine } from './dataMachine'
 
-
 interface IPokemonMachineScheme {
 	states: {
 		idle: {}
@@ -29,41 +28,15 @@ export const pokemonMachine = createMachine<any>({
 				id: 'pokemon-data-machine',
 				src: createPokemonDataMachine,
 				onDone: {
-					target: 'tempFetch',
+					target: 'present',
 					actions: assign({
 						pokemonInfo: (_, event) => event.data,
 					}),
 				},
 			},
 		},
-		tempFetch: {
-			invoke: {
-				id: 'test-lambda',
-				src: invokeLambdaTest,
-				onDone: {
-					target: 'present',
-					actions: (_, event) => console.log(`🚧 lambda test - ${event.data}`),
-				},
-				onError: {
-					target: 'present',
-					actions: (_, event) => console.log(`🚧 lambda test - ${event.data}`),
-				},
-			},
+		present: {
+			type: 'final',
 		},
-		present: {},
 	},
-	})
-
-async function invokeLambdaTest(): Promise<any> {
-	const dateEpoch = Date.now()
-	const url = `https://api.todayspokemon.com?id=${dateEpoch}`
-	const response = await fetch(url, {
-		method: 'GET',
-		mode: 'same-origin',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-		},
-	})
-	return await response.json()
-}
+})

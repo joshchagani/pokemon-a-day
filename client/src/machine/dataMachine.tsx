@@ -8,6 +8,7 @@ import type { IPokemon, IPokemonContext } from '../interfaces/Pokemon'
 
 const FALLBACK_TOTAL_POKEMON_COUNT = 898
 const FALLBACK_TOTAL_POKEMON_ID = 1
+const LAMBDA_API_URL = 'https://api.todayspokemon.com'
 const GRAPHQL_URL = 'https://beta.pokeapi.co/graphql/v1beta'
 const POKEMON_COUNT_URL = 'https://pokeapi.co/api/v2/pokemon-species/?limit=0'
 
@@ -18,6 +19,7 @@ const client = new ApolloClient({
 
 interface IPokemonStateSchema {
 	states: {
+		pokeApi: {}
 		pokeCounter: {}
 		pokePicker: {}
 		pause: {}
@@ -30,7 +32,7 @@ interface IPokemonStateSchema {
 export const createPokemonDataMachine = createMachine<IPokemonContext>(
 	{
 		id: 'pokemon-data',
-		initial: 'pokeCounter',
+		initial: 'pokeApi',
 		// initial: 'mockCounter',
 		context: {
 			...initialContext,
@@ -55,6 +57,48 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 							'getWeight',
 						],
 						target: 'success',
+					},
+				},
+			},
+			pokeApi: {
+				invoke: {
+					id: 'pokemon-lambda-api',
+					src: 'getPokemon',
+					onDone: {
+						target: 'success',
+						actions: assign((_, event) => {
+							const apiData = event.data
+							const {
+								pokemonAbilities,
+								pokemonBaseExp,
+								pokemonColor,
+								pokemonGameAppearances,
+								pokemonHeight,
+								pokemonId,
+								pokemonName,
+								pokemonSpriteUrl,
+								pokemonTypes,
+								pokemonWeight,
+							} = apiData
+
+							return {
+								abilities: pokemonAbilities,
+								baseExperience: pokemonBaseExp,
+								color: pokemonColor,
+								game: pokemonGameAppearances,
+								height: pokemonHeight,
+								name: pokemonName,
+								pokemonId: pokemonId,
+								spriteUrl: pokemonSpriteUrl,
+								types: pokemonTypes,
+								weight: pokemonWeight,
+							}
+						}),
+					},
+					onError: {
+						target: 'pokeCounter',
+						actions: (_, event) =>
+							console.error('🚨 Using PokeApi directly ', event.data),
 					},
 				},
 			},
@@ -90,7 +134,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 			query: {
 				invoke: {
 					id: 'fetch-pokemon-data',
-					src: 'getPokemon',
+					src: 'getPokemonBackup',
 					onDone: {
 						target: 'success',
 						actions: [
@@ -127,8 +171,9 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 	},
 	{
 		services: {
+			getPokemon: (_) => invokeLambdaApi(),
 			getTotalPokemonCount: (_) => invokeFetchPokemonCount,
-			getPokemon: (context) => invokeFetchPokemon(context.pokemonId),
+			getPokemonBackup: (context) => invokeFetchPokemon(context.pokemonId),
 			getMockPokemon: () => invokeMockFetch,
 		},
 		actions: {
@@ -201,6 +246,20 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 		},
 	},
 )
+
+async function invokeLambdaApi(): Promise<IPokemon> {
+	const date = Date.now()
+	const url = `${LAMBDA_API_URL}?id=${date}`
+	const response = await fetch(url, {
+		method: 'GET',
+		// mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+		},
+	})
+	return await response.json()
+}
 
 async function invokeFetchPokemonCount(): Promise<number> {
 	const response = await fetch(POKEMON_COUNT_URL)
@@ -277,8 +336,5 @@ function invokePokePicker(maxNumber: number): number {
 		newNum = parseInt(ts.toString().substring(indexer, indexer + 3))
 		indexer--
 	}
-	console.log('local', dateTimeLocal)
-	console.log('UTC', ts)
-	console.log('pokemon number', newNum)
 	return newNum
 }

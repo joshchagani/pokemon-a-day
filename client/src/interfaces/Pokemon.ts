@@ -48,7 +48,7 @@ export interface IPokemonContext {
 	progress: number
 	baseExperience: number
 	height: number
-	weight: number
+	weight: string
 	abilities: string[]
 	types: string[]
 }
