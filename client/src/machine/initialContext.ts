@@ -9,7 +9,7 @@ const initialContext: IPokemonContext = {
 	progress: 0,
 	baseExperience: 0,
 	height: 0,
-	weight: 0,
+	weight: '',
 	abilities: ['', ''],
 	types: ['', ''],
 	game: 'red-blue',
