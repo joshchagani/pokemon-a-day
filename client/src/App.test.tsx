@@ -12,14 +12,14 @@ describe('<App>', () => {
 		const mainTag = document.querySelector('main')
 		expect(mainTag?.tagName.toLocaleLowerCase()).to.equal('main')
 	})
-	it('populates pokemonInfo', (done) => {
-		interpret(pokemonMachine)
-			.onTransition((state) => {
-				if (state.matches('present')) {
-					assert.isNotEmpty((state.context as any).pokemonInfo)
-					done()
-				}
-			})
-			.start()
-	})
+	// it('populates pokemonInfo', (done) => {
+	// interpret(pokemonMachine)
+	//	.onTransition((state) => {
+	//		if (state.matches('present')) {
+	//			assert.isNotEmpty((state.context as any).pokemonInfo)
+	//			done()
+	//		}
+	//	})
+	//	.start()
+	//})
 })
