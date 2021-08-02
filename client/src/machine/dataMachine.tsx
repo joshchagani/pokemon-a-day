@@ -67,7 +67,7 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 					onDone: {
 						target: 'success',
 						actions: assign((_, event) => {
-							const apiData = event.data
+							const { data: apiData } = event.data
 							const {
 								pokemonAbilities,
 								pokemonBaseExp,
