@@ -68,7 +68,6 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 						target: 'success',
 						actions: assign((_, event) => {
 							const { data: apiData } = event.data
-							console.log('⚡️ apiData', apiData)
 							const {
 								pokemonAbilities,
 								pokemonBaseExp,
@@ -87,12 +86,12 @@ export const createPokemonDataMachine = createMachine<IPokemonContext>(
 								baseExperience: pokemonBaseExp,
 								color: pokemonColor,
 								game: pokemonGameAppearances,
-								height: pokemonHeight,
+								height: metricToFeet(pokemonHeight),
 								name: pokemonName,
 								pokemonId: pokemonId,
 								spriteUrl: pokemonSpriteUrl,
 								types: pokemonTypes,
-								weight: pokemonWeight,
+								weight: gramsToPounds(pokemonWeight),
 							}
 						}),
 					},

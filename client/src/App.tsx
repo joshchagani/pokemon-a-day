@@ -131,6 +131,7 @@ const PokemonId = styled.div`
 	text-align: center;
 
 	@media screen and (orientation: landscape) {
+		align-self: end;
 		grid-column: 2 / -1;
 		grid-row: 1 / span 1;
 	}
